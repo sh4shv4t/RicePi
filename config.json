@@ -50,8 +50,8 @@
     "poll_interval_secs": 5
   },
   "spotify": {
-    "enabled": false,
-    "source": "playerctl",
+    "enabled": true,
+    "source": "auto",
     "poll_secs": 10,
     "playerctl_player": "spotify",
     "local_url": "",

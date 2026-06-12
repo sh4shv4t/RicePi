@@ -65,6 +65,9 @@ const StatusBar = (() => {
       const text = `${artist}${spotify.title}`;
       el.textContent = `♪ ${text.length > 38 ? `${text.slice(0, 35)}...` : text}`;
       el.classList.add('status-bar__spotify--live');
+    } else if (spotify?.error) {
+      el.textContent = '♪ no media';
+      el.classList.remove('status-bar__spotify--live');
     } else {
       el.textContent = '♪ idle';
       el.classList.remove('status-bar__spotify--live');

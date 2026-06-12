@@ -1,8 +1,9 @@
-"""Spotify now-playing via playerctl, Web API, or local JSON endpoint."""
+"""Now-playing via playerctl, Spotify Web API, Windows media session, or local URL."""
 
 from __future__ import annotations
 
 import json
+import platform
 import shutil
 import subprocess
 import time
@@ -13,7 +14,9 @@ import httpx
 ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.json"
 CACHE_PATH = ROOT / "data" / "spotify_cache.json"
+WINDOWS_MEDIA_SCRIPT = ROOT / "scripts" / "windows_media.ps1"
 
+IS_WINDOWS = platform.system() == "Windows"
 _token_cache: dict = {"access_token": None, "expires_at": 0.0}
 
 
@@ -26,49 +29,95 @@ def _empty() -> dict:
     return {"playing": False, "artist": None, "title": None, "source": None}
 
 
-def _playerctl(player: str = "spotify") -> dict:
+def _playerctl(player: str | None = "spotify") -> dict:
     if not shutil.which("playerctl"):
         return {**_empty(), "error": "playerctl not found"}
 
-    try:
-        status = subprocess.run(
-            ["playerctl", "-p", player, "status"],
-            capture_output=True,
-            text=True,
-            timeout=3,
-            check=False,
-        )
-        if status.returncode != 0 or status.stdout.strip().lower() != "playing":
-            return _empty()
+    players = [player] if player else []
+    players.append(None)
 
-        meta = subprocess.run(
+    for target in players:
+        try:
+            status_cmd = ["playerctl"]
+            meta_cmd = ["playerctl"]
+            if target:
+                status_cmd.extend(["-p", target])
+                meta_cmd.extend(["-p", target])
+            status_cmd.append("status")
+            meta_cmd.extend(["metadata", "--format", "{{artist}}|||{{title}}"])
+
+            status = subprocess.run(
+                status_cmd,
+                capture_output=True,
+                text=True,
+                timeout=3,
+                check=False,
+            )
+            if status.returncode != 0 or status.stdout.strip().lower() != "playing":
+                continue
+
+            meta = subprocess.run(
+                meta_cmd,
+                capture_output=True,
+                text=True,
+                timeout=3,
+                check=False,
+            )
+            if meta.returncode != 0:
+                continue
+
+            parts = meta.stdout.strip().split("|||", 1)
+            artist = parts[0].strip() if parts else None
+            title = parts[1].strip() if len(parts) > 1 else None
+            if not title:
+                continue
+
+            return {
+                "playing": True,
+                "artist": artist or None,
+                "title": title,
+                "source": "playerctl",
+            }
+        except (OSError, subprocess.SubprocessError):
+            continue
+
+    return _empty()
+
+
+def _windows_media() -> dict:
+    if not WINDOWS_MEDIA_SCRIPT.is_file():
+        return {**_empty(), "error": "windows media script missing"}
+
+    try:
+        result = subprocess.run(
             [
-                "playerctl",
-                "-p",
-                player,
-                "metadata",
-                "--format",
-                "{{artist}}|||{{title}}",
+                "powershell",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                str(WINDOWS_MEDIA_SCRIPT),
             ],
             capture_output=True,
             text=True,
-            timeout=3,
+            timeout=8,
             check=False,
         )
-        if meta.returncode != 0:
+        if result.returncode != 0:
+            return {**_empty(), "error": result.stderr.strip() or "windows media failed"}
+
+        payload = json.loads(result.stdout.strip() or "{}")
+        if not payload.get("playing"):
             return _empty()
 
-        parts = meta.stdout.strip().split("|||", 1)
-        artist = parts[0].strip() if parts else None
-        title = parts[1].strip() if len(parts) > 1 else None
         return {
-            "playing": bool(title),
-            "artist": artist or None,
-            "title": title or None,
-            "source": "playerctl",
+            "playing": True,
+            "artist": payload.get("artist"),
+            "title": payload.get("title"),
+            "source": "windows_media",
         }
-    except (OSError, subprocess.SubprocessError):
-        return _empty()
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+        return {**_empty(), "error": str(exc)}
 
 
 def _refresh_web_token(web_cfg: dict) -> str | None:
@@ -135,7 +184,7 @@ def _web_api(web_cfg: dict) -> dict:
 
 def _local_poll(url: str) -> dict:
     if not url:
-        return _empty()
+        return {**_empty(), "error": "local_url not set"}
     try:
         with httpx.Client(timeout=5.0) as client:
             response = client.get(url)
@@ -151,21 +200,55 @@ def _local_poll(url: str) -> dict:
         return _empty()
 
 
+def _web_api_configured(spotify_cfg: dict) -> bool:
+    web_cfg = spotify_cfg.get("web_api", {})
+    return all(
+        web_cfg.get(key)
+        for key in ("client_id", "client_secret", "refresh_token")
+    )
+
+
+def _resolve_auto(spotify_cfg: dict) -> dict:
+    if IS_WINDOWS:
+        result = _windows_media()
+        if result.get("playing"):
+            return result
+
+    result = _playerctl(spotify_cfg.get("playerctl_player", "spotify"))
+    if result.get("playing"):
+        return result
+
+    if _web_api_configured(spotify_cfg):
+        return _web_api(spotify_cfg.get("web_api", {}))
+
+    local_url = spotify_cfg.get("local_url", "")
+    if local_url:
+        return _local_poll(local_url)
+
+    if IS_WINDOWS:
+        return result if result else _empty()
+    return _empty()
+
+
 def fetch_now_playing() -> dict:
     config = load_config()
     spotify_cfg = config.get("spotify", {})
     if not spotify_cfg.get("enabled", False):
         return _empty()
 
-    source = spotify_cfg.get("source", "playerctl")
-    if source == "playerctl":
+    source = spotify_cfg.get("source", "auto")
+    if source == "auto":
+        data = _resolve_auto(spotify_cfg)
+    elif source == "playerctl":
         data = _playerctl(spotify_cfg.get("playerctl_player", "spotify"))
+    elif source == "windows_media":
+        data = _windows_media()
     elif source == "web_api":
         data = _web_api(spotify_cfg.get("web_api", {}))
     elif source == "local":
         data = _local_poll(spotify_cfg.get("local_url", ""))
     else:
-        data = _empty()
+        data = {**_empty(), "error": f"unknown source: {source}"}
 
     data["updated_at"] = time.time()
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)

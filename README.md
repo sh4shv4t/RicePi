@@ -117,7 +117,9 @@ The top status bar shows live ping latency, network throughput with a mini spark
 
 | Source | Platform | Setup |
 |--------|----------|-------|
-| `playerctl` | Linux/Pi | `sudo apt install playerctl`, Spotify desktop playing |
+| `playerctl` | Linux/Pi | `sudo apt install playerctl`, Spotify desktop or spotifyd playing |
+| `auto` | Any | Windows media session, then playerctl, then web_api if configured |
+| `windows_media` | Windows | Reads Spotify/system now-playing from Windows media controls |
 | `web_api` | Any | [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) app + refresh token in `web_api` |
 | `local` | Any | Your own JSON endpoint at `local_url` returning `{"playing": true, "artist": "...", "title": "..."}` |
 

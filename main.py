@@ -62,6 +62,11 @@ async def index():
     return FileResponse(STATIC_DIR / "index.html")
 
 
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
+
+
 @app.get("/theme.css")
 async def theme_css():
     return FileResponse(ROOT / "theme.css", media_type="text/css")
