@@ -118,7 +118,7 @@ Set in `config.json`:
 
 ```bash
 cd ~
-git clone <your-repo-url> ricepi
+git clone https://github.com/sh4shv4t/RicePi
 cd ricepi
 python3 -m venv venv
 source venv/bin/activate
