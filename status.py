@@ -25,11 +25,11 @@ def get_status() -> dict:
     ping_host = status_cfg.get("ping_host", "8.8.8.8")
     ping = ping_latency.ping_host(ping_host)
 
-    net = network_module.get_network()
+    net = network_module.sample_network()
 
     spotify_cfg = config.get("spotify", {})
     if spotify_cfg.get("enabled"):
-        spotify = spotify_module.get_cached_now_playing()
+        spotify = spotify_module.fetch_now_playing()
     else:
         spotify = {"playing": False, "artist": None, "title": None}
 

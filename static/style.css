@@ -25,6 +25,7 @@ html,
 body {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--color-base);
   color: var(--color-text);
@@ -49,17 +50,19 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-accent) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 4%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-accent) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 3%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
-  opacity: 0.12;
+  opacity: 0.08;
 }
 
 #wallpaper::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--vignette);
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-base) 30%, transparent), transparent 18%),
+    var(--vignette);
   pointer-events: none;
 }
 
@@ -68,11 +71,12 @@ body {
   z-index: 10;
   width: 100vw;
   height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(280px, 1.1fr) minmax(260px, 0.9fr) 180px;
-  grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 36vh) minmax(0, 112px);
+  grid-template-columns: minmax(260px, 1fr) minmax(240px, 1fr) 160px;
+  grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 32vh) minmax(120px, 16vh);
   grid-template-areas:
     "status status status"
     "clock . sysinfo"
@@ -103,7 +107,6 @@ body {
   letter-spacing: 0.02em;
   flex-wrap: wrap;
   row-gap: 4px;
-  backdrop-filter: blur(6px);
   text-shadow: 0 1px 6px color-mix(in srgb, var(--color-base) 85%, transparent);
 }
 
@@ -192,7 +195,6 @@ body {
   min-height: 0;
   max-height: 100%;
   text-shadow: 0 1px 6px color-mix(in srgb, var(--color-base) 85%, transparent);
-  backdrop-filter: blur(6px);
 }
 
 body.pixel-borders .module {
@@ -252,10 +254,10 @@ body.pixel-borders .module {
   grid-area: animation;
   align-self: end;
   justify-self: end;
-  width: 180px;
-  height: 100%;
-  max-height: calc(36vh + 112px + 12px);
+  width: 160px;
+  max-height: calc(32vh + 120px + 12px);
   min-height: 0;
+  height: auto;
   padding: 6px;
   background: var(--module-bg);
 }
@@ -267,7 +269,9 @@ body.pixel-borders .module {
   min-width: 0;
   max-width: none;
   max-height: 100%;
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
+  align-items: center;
 }
 
 #nowplaying-module {

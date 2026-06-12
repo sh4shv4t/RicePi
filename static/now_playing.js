@@ -20,6 +20,8 @@ const NowPlaying = (() => {
     const artistEl = document.getElementById('nowplaying-artist');
     const stateEl = document.getElementById('nowplaying-state');
     const artPlaceholder = document.getElementById('nowplaying-art-placeholder');
+
+    if (!config.spotify?.enabled) {
       setVisible(false);
       return;
     }
@@ -37,14 +39,11 @@ const NowPlaying = (() => {
 
       if (art && data.has_art && data.art_url) {
         if (artPlaceholder) artPlaceholder.classList.add('hidden');
-        if (trackChanged) {
+        const artUrl = data.art_url.startsWith('/') ? data.art_url : `/${data.art_url}`;
+        if (trackChanged || !art.src.includes('/api/spotify/art')) {
           art.classList.add('nowplaying__art--fade');
-          setTimeout(() => {
-            art.src = data.art_url;
-            art.onload = () => art.classList.remove('nowplaying__art--fade');
-          }, 200);
-        } else if (!art.src.includes('/api/spotify/art')) {
-          art.src = data.art_url;
+          art.onload = () => art.classList.remove('nowplaying__art--fade');
+          art.src = artUrl;
         }
         art.classList.remove('hidden');
       } else {

@@ -19,10 +19,9 @@ const Sysinfo = (() => {
           lines.push({ label: 'os', value: data.os || 'unknown' });
           break;
         case 'kernel':
-          lines.push({
-            label: data.platform === 'windows' ? 'win' : 'kernel',
-            value: data.kernel || 'unknown',
-          });
+          if (data.platform !== 'windows') {
+            lines.push({ label: 'kernel', value: data.kernel || 'unknown' });
+          }
           break;
         case 'uptime':
           lines.push({ label: 'uptime', value: data.uptime || 'unknown' });

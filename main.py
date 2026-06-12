@@ -122,6 +122,9 @@ async def get_status():
 
 @app.get("/api/spotify")
 async def get_spotify():
+    config = load_config()
+    if config.get("spotify", {}).get("enabled"):
+        return spotify_module.fetch_now_playing()
     cache_path = DATA_DIR / "spotify_cache.json"
     if cache_path.is_file():
         with cache_path.open(encoding="utf-8") as f:

@@ -94,9 +94,11 @@ const StatusBar = (() => {
     const net = data.network || {};
     if (netEl) {
       if (net.available !== false) {
-        netEl.textContent = `↑${formatKbps(net.tx_kbps)} ↓${formatKbps(net.rx_kbps)} KB/s`;
+        const up = formatKbps(net.tx_kbps);
+        const down = formatKbps(net.rx_kbps);
+        netEl.textContent = `↑${up} ↓${down} KB/s`;
       } else {
-        netEl.textContent = 'net --';
+        netEl.textContent = 'net n/a';
       }
     }
 
