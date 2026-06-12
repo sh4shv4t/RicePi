@@ -1,0 +1,49 @@
+{
+  "wallpaper": "static/wallpapers/current.jpg",
+  "theme": {
+    "mode": "auto",
+    "fallback_accent": "#7dcfff",
+    "fallback_base": "#1a1b26",
+    "fallback_secondary": "#bb9af7",
+    "font_display": "Press Start 2P",
+    "font_body": "JetBrains Mono",
+    "scanlines": true,
+    "scanline_opacity": 0.03,
+    "pixel_borders": true,
+    "glitch_clock": true,
+    "glitch_interval_min_ms": 30000,
+    "glitch_interval_max_ms": 90000
+  },
+  "location": {
+    "lat": 26.9,
+    "lon": 75.8,
+    "city": "Jaipur"
+  },
+  "clock": {
+    "format": "24h",
+    "show_seconds": false
+  },
+  "weather": {
+    "units": "metric",
+    "update_interval_mins": 15
+  },
+  "calendar": {
+    "source": "local",
+    "show_upcoming_count": 3
+  },
+  "animation": {
+    "folder": "static/animations/",
+    "mode": "loop_single",
+    "current": "",
+    "cycle_every_mins": 0
+  },
+  "quote": {
+    "source": "local",
+    "rotate_every_mins": 10,
+    "show_cursor_blink": true
+  },
+  "sysinfo": {
+    "show": true,
+    "items": ["os", "kernel", "uptime", "ram", "cpu_temp"]
+  }
+}

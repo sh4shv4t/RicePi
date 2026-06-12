@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RicePi</title>
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/animations.css">
+</head>
+<body>
+  <div id="wallpaper" aria-hidden="true"></div>
+
+  <main id="dashboard" class="dashboard">
+    <!-- TOP LEFT: Clock + Date -->
+    <section id="clock-module" class="module module--boot" data-boot-order="0">
+      <div id="clock" class="clock" aria-live="polite">
+        <span class="clock__hours">00</span>
+        <span class="clock__colon">:</span>
+        <span class="clock__minutes">00</span>
+        <span id="clock-seconds" class="clock__seconds hidden">:00</span>
+      </div>
+      <div id="date" class="date"></div>
+    </section>
+
+    <!-- TOP RIGHT: Sysinfo -->
+    <section id="sysinfo-module" class="module module--boot" data-boot-order="1">
+      <div class="module__header">sysinfo</div>
+      <div id="sysinfo-content" class="sysinfo"></div>
+    </section>
+
+    <!-- BOTTOM CENTER: Weather -->
+    <section id="weather-module" class="module module--boot" data-boot-order="2">
+      <div class="module__header">weather</div>
+      <div class="weather">
+        <div id="weather-current" class="weather__current">
+          <div id="weather-icon" class="weather__icon" aria-hidden="true"></div>
+          <div class="weather__details">
+            <div id="weather-temp" class="weather__temp">--°</div>
+            <div id="weather-city" class="weather__city"></div>
+            <div id="weather-wind" class="weather__wind"></div>
+          </div>
+        </div>
+        <div id="weather-forecast" class="weather__forecast"></div>
+      </div>
+    </section>
+
+    <!-- BOTTOM LEFT: Calendar -->
+    <section id="calendar-module" class="module module--boot" data-boot-order="3">
+      <div class="module__header">calendar</div>
+      <div id="calendar-grid" class="calendar-grid"></div>
+      <ul id="calendar-events" class="calendar-events"></ul>
+    </section>
+
+    <!-- BOTTOM RIGHT: Animation player -->
+    <section id="animation-module" class="module module--boot module--animation" data-boot-order="4">
+      <div id="animation-player" class="animation-player">
+        <div class="animation-player__layer animation-player__layer--a"></div>
+        <div class="animation-player__layer animation-player__layer--b"></div>
+        <div id="animation-placeholder" class="animation-player__placeholder hidden">
+          <span class="animation-player__dot"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM: Quote -->
+    <section id="quote-module" class="module module--boot" data-boot-order="5">
+      <blockquote id="quote-block" class="quote">
+        <p id="quote-text" class="quote__text"></p>
+        <footer id="quote-author" class="quote__author"></footer>
+      </blockquote>
+    </section>
+  </main>
+
+  <script src="/static/utils.js"></script>
+  <script src="/static/boot_sequence.js"></script>
+  <script src="/static/clock.js"></script>
+  <script src="/static/weather.js"></script>
+  <script src="/static/calendar.js"></script>
+  <script src="/static/sysinfo.js"></script>
+  <script src="/static/quotes.js"></script>
+  <script src="/static/animation_player.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const config = await fetch('/api/config').then(r => r.json());
+      window.RicePiConfig = config;
+
+      document.body.classList.toggle('scanlines', config.theme?.scanlines !== false);
+      document.body.classList.toggle('pixel-borders', config.theme?.pixel_borders !== false);
+      if (config.theme?.scanline_opacity != null) {
+        document.documentElement.style.setProperty('--scanline-opacity', config.theme.scanline_opacity);
+      }
+      if (config.wallpaper) {
+        document.getElementById('wallpaper').style.backgroundImage = `url('/${config.wallpaper.replace(/^\//, '')}')`;
+      }
+
+      BootSequence.init(config);
+      Clock.init(config);
+      Weather.init(config);
+      Calendar.init(config);
+      Sysinfo.init(config);
+      Quotes.init(config);
+      AnimationPlayer.init(config);
+    });
+  </script>
+</body>
+</html>

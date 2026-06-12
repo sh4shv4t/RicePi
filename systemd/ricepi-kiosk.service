@@ -1,0 +1,16 @@
+[Unit]
+Description=RicePi Chromium Kiosk
+After=ricepi-server.service graphical.target
+Requires=ricepi-server.service
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/usr/bin/chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --check-for-update-interval=31536000 http://localhost:8000
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target

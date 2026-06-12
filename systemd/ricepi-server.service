@@ -1,0 +1,16 @@
+[Unit]
+Description=RicePi Dashboard Server
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/ricepi
+ExecStart=/bin/bash -c 'python3 init_theme.py && uvicorn main:app --host 0.0.0.0 --port 8000'
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

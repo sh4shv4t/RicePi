@@ -1,0 +1,561 @@
+/* RicePi — layout, themes, pixel borders, scanlines */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --font-display: "Press Start 2P", monospace;
+  --font-body: "JetBrains Mono", monospace;
+  --scanline-opacity: 0.03;
+  --module-bg: color-mix(in srgb, var(--color-base) 8%, transparent);
+  --module-bg-max: color-mix(in srgb, var(--color-base) 12%, transparent);
+  --vignette: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    color-mix(in srgb, var(--color-base) 35%, transparent) 100%
+  );
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-base);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 0;
+}
+
+#wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--vignette);
+  pointer-events: none;
+}
+
+.dashboard {
+  position: relative;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-areas:
+    "clock . sysinfo"
+    ". . ."
+    "calendar weather animation"
+    "quote quote animation";
+  padding: 24px;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.module {
+  pointer-events: auto;
+  background: var(--module-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  padding: 14px 16px;
+  position: relative;
+}
+
+body.pixel-borders .module {
+  clip-path: polygon(
+    0 3px, 3px 3px, 3px 0,
+    calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+    100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+    3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-secondary) 30%, transparent),
+    1px 1px 0 0 var(--color-accent);
+}
+
+#clock-module {
+  grid-area: clock;
+  align-self: start;
+  justify-self: start;
+  min-width: 280px;
+}
+
+#sysinfo-module {
+  grid-area: sysinfo;
+  align-self: start;
+  justify-self: end;
+  min-width: 260px;
+  max-width: 340px;
+}
+
+#weather-module {
+  grid-area: weather;
+  align-self: end;
+  justify-self: center;
+  min-width: 320px;
+}
+
+#calendar-module {
+  grid-area: calendar;
+  align-self: end;
+  justify-self: start;
+  min-width: 280px;
+}
+
+#animation-module {
+  grid-area: animation;
+  align-self: end;
+  justify-self: end;
+  width: 220px;
+  height: 220px;
+  padding: 8px;
+  background: var(--module-bg);
+}
+
+#quote-module {
+  grid-area: quote;
+  align-self: end;
+  justify-self: stretch;
+  max-width: calc(66vw - 48px);
+}
+
+.module__header {
+  font-family: var(--font-display);
+  font-size: 8px;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  margin-bottom: 10px;
+}
+
+/* Scanline overlay */
+body.scanlines::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 4px
+  );
+}
+
+/* Clock */
+.clock {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.clock__hours,
+.clock__minutes {
+  display: inline-block;
+  min-width: 2ch;
+}
+
+.clock__colon {
+  display: inline-block;
+  opacity: 1;
+}
+
+.clock__seconds {
+  font-size: 0.45em;
+  color: var(--color-text-dim);
+  margin-left: 4px;
+}
+
+.clock__seconds.hidden {
+  display: none;
+}
+
+.clock.glitch {
+  transform: translateX(2px);
+  text-shadow:
+    2px 0 var(--color-accent),
+    -2px 0 var(--color-secondary);
+  clip-path: inset(40% 0 35% 0);
+}
+
+.date {
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.04em;
+}
+
+/* Sysinfo */
+.sysinfo {
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+.sysinfo__line {
+  opacity: 0;
+  transform: translateX(-5px);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.sysinfo__line.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sysinfo__label {
+  color: var(--color-accent);
+}
+
+.sysinfo__value {
+  color: var(--color-text);
+  transition: color 300ms ease;
+}
+
+.sysinfo__value.flash {
+  color: var(--color-accent);
+  transition: color 300ms ease;
+}
+
+.sysinfo__bar-wrap {
+  display: inline-block;
+  width: 80px;
+  height: 6px;
+  border: 1px solid var(--color-accent);
+  vertical-align: middle;
+  margin-left: 6px;
+  border-radius: 0;
+}
+
+.sysinfo__bar {
+  height: 100%;
+  width: 0;
+  background: var(--color-secondary);
+  transition: width 800ms ease-out;
+  border-radius: 0;
+}
+
+/* Weather */
+.weather__current {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.weather__icon {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.weather__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.weather__icon--fade-out {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.weather__icon--fade-in {
+  opacity: 1;
+  transition: opacity 400ms ease;
+}
+
+.weather__temp {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.weather__city {
+  font-size: 12px;
+  color: var(--color-text-dim);
+}
+
+.weather__wind {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  margin-top: 2px;
+}
+
+.weather__forecast {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+.weather__forecast-item {
+  font-size: 11px;
+  color: var(--color-text-dim);
+}
+
+.weather__forecast-item span {
+  color: var(--color-accent);
+}
+
+/* Meteocons element hooks */
+.weather-icon__sun {
+  transform-origin: center;
+}
+
+.weather-icon__ray {
+  transform-origin: center;
+}
+
+.weather-icon__cloud {
+  transform-origin: center;
+}
+
+.weather-icon__raindrop {
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  background: var(--color-accent);
+  border-radius: 0;
+  opacity: 0.8;
+}
+
+.weather-icon__lightning {
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+
+.weather-icon__lightning.flash {
+  opacity: 1;
+}
+
+.weather-icon__snowflake {
+  position: absolute;
+  font-size: 8px;
+  color: var(--color-text);
+}
+
+.weather-icon__star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--color-text);
+  border-radius: 0;
+}
+
+.weather-icon__wind-streak {
+  position: absolute;
+  height: 1px;
+  background: var(--color-text-dim);
+  border-radius: 0;
+}
+
+/* Calendar */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.calendar-grid__day-name {
+  color: var(--color-accent);
+  font-size: 9px;
+  padding-bottom: 4px;
+}
+
+.calendar-grid__cell {
+  padding: 4px 2px;
+  color: var(--color-text-dim);
+  border: 1px solid transparent;
+  border-radius: 0;
+}
+
+.calendar-grid__cell--today {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+  animation: calendar-today-glow 3s ease-in-out infinite;
+}
+
+.calendar-grid__cell--today-fade-out {
+  animation: calendar-today-fade-out 500ms ease forwards;
+}
+
+.calendar-grid__cell--today-fade-in {
+  animation: calendar-today-fade-in 500ms ease forwards;
+}
+
+.calendar-grid__cell--other-month {
+  opacity: 0.35;
+}
+
+.calendar-events {
+  list-style: none;
+  margin-top: 12px;
+  font-size: 11px;
+}
+
+.calendar-events__item {
+  opacity: 0;
+  transform: translateX(-20px);
+  margin-bottom: 6px;
+  color: var(--color-text-dim);
+}
+
+.calendar-events__item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.calendar-events__time {
+  color: var(--color-accent);
+  margin-right: 8px;
+}
+
+/* Quote */
+.quote {
+  border: none;
+  padding: 0;
+}
+
+.quote__text {
+  font-size: 13px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.quote__cursor {
+  display: inline-block;
+  animation: cursor-blink 1s step-end infinite;
+  color: var(--color-accent);
+}
+
+.quote__author {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--color-text-dim);
+  opacity: 0;
+}
+
+.quote__author.visible {
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+.quote__text--out {
+  animation: quote-out 400ms ease forwards;
+}
+
+.quote__text--in {
+  animation: quote-in 400ms ease forwards;
+}
+
+/* Animation player */
+.animation-player {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.animation-player__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 800ms ease, transform 1000ms ease-out;
+}
+
+.animation-player__layer.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.animation-player__layer img,
+.animation-player__layer video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 0;
+}
+
+.animation-player__layer--crossfade-out {
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.animation-player__layer--crossfade-in {
+  opacity: 1;
+  transition: opacity 800ms ease;
+}
+
+.animation-player__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animation-player__placeholder.hidden {
+  display: none;
+}
+
+.animation-player__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  opacity: 0.4;
+  border-radius: 0;
+}
+
+.module--animation.module--boot-visible {
+  animation: animation-module-in 1000ms ease-out forwards;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "clock sysinfo"
+      ". ."
+      "weather weather"
+      "calendar animation"
+      "quote quote";
+  }
+
+  #quote-module {
+    max-width: 100%;
+  }
+}
