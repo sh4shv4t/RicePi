@@ -12,12 +12,12 @@
   --font-display: "Press Start 2P", monospace;
   --font-body: "JetBrains Mono", monospace;
   --scanline-opacity: 0.03;
-  --module-bg: color-mix(in srgb, var(--color-base) 8%, transparent);
+  --module-bg: color-mix(in srgb, var(--color-base) 12%, transparent);
   --module-bg-max: color-mix(in srgb, var(--color-base) 12%, transparent);
   --vignette: radial-gradient(
     ellipse at center,
-    transparent 50%,
-    color-mix(in srgb, var(--color-base) 35%, transparent) 100%
+    color-mix(in srgb, var(--color-base) 20%, transparent) 0%,
+    color-mix(in srgb, var(--color-base) 55%, transparent) 100%
   );
 }
 
@@ -49,10 +49,10 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.35;
+    linear-gradient(color-mix(in srgb, var(--color-accent) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 4%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.12;
 }
 
 #wallpaper::after {
@@ -91,15 +91,17 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 12px;
-  background: color-mix(in srgb, var(--color-base) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  padding: 7px 14px;
+  background: color-mix(in srgb, var(--color-base) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
   font-family: var(--font-body);
   font-size: 11px;
-  color: var(--color-text-dim);
+  color: var(--color-text);
   letter-spacing: 0.02em;
   flex-wrap: wrap;
   row-gap: 4px;
+  backdrop-filter: blur(6px);
+  text-shadow: 0 1px 6px color-mix(in srgb, var(--color-base) 85%, transparent);
 }
 
 .status-bar__dot {
@@ -119,7 +121,7 @@ body {
 }
 
 .status-bar__meta {
-  color: var(--color-text-dim);
+  color: var(--color-text);
 }
 
 .status-bar__link {
@@ -179,11 +181,13 @@ body {
 
 .module {
   pointer-events: auto;
-  background: var(--module-bg);
+  background: var(--module-bg-max);
   border: 1px solid var(--color-accent);
   border-radius: 0;
   padding: 14px 16px;
   position: relative;
+  text-shadow: 0 1px 6px color-mix(in srgb, var(--color-base) 85%, transparent);
+  backdrop-filter: blur(6px);
 }
 
 body.pixel-borders .module {
@@ -218,6 +222,13 @@ body.pixel-borders .module {
   align-self: end;
   justify-self: center;
   min-width: 320px;
+  max-width: 360px;
+}
+
+.weather {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 #calendar-module {
@@ -325,7 +336,7 @@ body.scanlines::after {
   margin-top: 10px;
   font-family: var(--font-body);
   font-size: 12px;
-  color: var(--color-text-dim);
+  color: var(--color-text);
   letter-spacing: 0.04em;
 }
 
@@ -346,6 +357,10 @@ body.scanlines::after {
   margin-bottom: 5px;
   white-space: nowrap;
   font-size: 11px;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 8px;
+  align-items: center;
 }
 
 .sysinfo__line.visible {
@@ -428,7 +443,7 @@ body.scanlines::after {
 
 .weather__city {
   font-size: 12px;
-  color: var(--color-text-dim);
+  color: var(--color-text);
 }
 
 .weather__wind {
@@ -439,7 +454,7 @@ body.scanlines::after {
 
 .weather__sun {
   font-size: 11px;
-  color: var(--color-text-dim);
+  color: var(--color-text);
   margin-top: 4px;
   letter-spacing: 0.04em;
 }
@@ -557,9 +572,14 @@ body.scanlines::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-dim);
+  color: var(--color-text);
   border: 1px solid transparent;
   border-radius: 0;
+}
+
+.calendar-grid__cell--other-month {
+  opacity: 0.5;
+  color: var(--color-text-dim);
 }
 
 .calendar-grid__cell--today {
@@ -576,10 +596,6 @@ body.scanlines::after {
   animation: calendar-today-fade-in 500ms ease forwards;
 }
 
-.calendar-grid__cell--other-month {
-  opacity: 0.35;
-}
-
 .calendar-events {
   list-style: none;
   margin-top: 14px;
@@ -592,13 +608,16 @@ body.scanlines::after {
   opacity: 0;
   transform: translateX(-20px);
   margin-bottom: 8px;
-  color: var(--color-text-dim);
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .calendar-events__item::before {
   content: ">";
-  margin-right: 8px;
   color: var(--color-secondary);
+  flex-shrink: 0;
 }
 
 .calendar-events__item.visible {
@@ -615,6 +634,9 @@ body.scanlines::after {
 .quote {
   border: none;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .quote__text {
@@ -635,7 +657,8 @@ body.scanlines::after {
 }
 
 .quote__author {
-  margin-top: 8px;
+  margin-top: 0;
+  margin-left: 1.4em;
   font-size: 11px;
   color: var(--color-text-dim);
   opacity: 0;

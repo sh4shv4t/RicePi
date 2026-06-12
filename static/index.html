@@ -118,7 +118,7 @@
         document.getElementById('wallpaper').style.backgroundImage = `url('/${config.wallpaper.replace(/^\//, '')}')`;
       }
 
-      BootSequence.init(config);
+      BootSequence.init();
       Clock.init(config);
       Weather.init(config);
       Calendar.init(config);
@@ -126,10 +126,6 @@
       StatusBar.init(config);
       Quotes.init(config);
       AnimationPlayer.init(config);
-
-      setTimeout(() => {
-        document.getElementById('status-bar')?.classList.add('module--boot-visible');
-      }, 100);
     });
   </script>
 </body>

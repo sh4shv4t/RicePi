@@ -21,6 +21,33 @@ def rgb_to_hex(r: int, g: int, b: int) -> str:
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
+def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
+    value = hex_color.lstrip("#")
+    return int(value[0:2], 16), int(value[2:4], 16), int(value[4:6], 16)
+
+
+def ensure_readability(colors: dict[str, str], theme_cfg: dict) -> dict[str, str]:
+    base_lum = luminance(*hex_to_rgb(colors["base"]))
+    text_lum = luminance(*hex_to_rgb(colors["text"]))
+
+    if base_lum > 120:
+        colors["base"] = theme_cfg.get("fallback_base", "#1a1b26")
+
+    if text_lum < 175:
+        colors["text"] = theme_cfg.get("fallback_text", "#e8ecf4")
+
+    accent_lum = luminance(*hex_to_rgb(colors["accent"]))
+    if accent_lum < 120:
+        colors["accent"] = theme_cfg.get("fallback_accent", "#7dcfff")
+
+    sec_lum = luminance(*hex_to_rgb(colors["secondary"]))
+    if sec_lum < 90:
+        colors["secondary"] = theme_cfg.get("fallback_secondary", "#bb9af7")
+
+    colors["text_dim"] = f"color-mix(in srgb, {colors['text']} 72%, transparent)"
+    return colors
+
+
 def saturation(r: int, g: int, b: int) -> float:
     r_f, g_f, b_f = r / 255.0, g / 255.0, b / 255.0
     mx = max(r_f, g_f, b_f)
@@ -60,7 +87,7 @@ def assign_colors(palette: list[tuple[int, int, int]]) -> dict[str, str]:
         "accent": accent_hex,
         "secondary": rgb_to_hex(*secondary),
         "text": rgb_to_hex(*text),
-        "text_dim": f"color-mix(in srgb, {accent_hex} 50%, transparent)",
+        "text_dim": f"color-mix(in srgb, {rgb_to_hex(*text)} 72%, transparent)",
     }
 
 
@@ -73,12 +100,13 @@ def extract_palette(wallpaper_path: Path) -> list[tuple[int, int, int]]:
 
 def fallback_colors(theme_cfg: dict) -> dict[str, str]:
     accent = theme_cfg.get("fallback_accent", "#7dcfff")
+    text = theme_cfg.get("fallback_text", "#e8ecf4")
     return {
         "base": theme_cfg.get("fallback_base", "#1a1b26"),
         "accent": accent,
         "secondary": theme_cfg.get("fallback_secondary", "#bb9af7"),
-        "text": "#c0caf5",
-        "text_dim": f"color-mix(in srgb, {accent} 50%, transparent)",
+        "text": text,
+        "text_dim": f"color-mix(in srgb, {text} 72%, transparent)",
     }
 
 
@@ -109,6 +137,7 @@ def generate_theme() -> dict[str, str]:
         print(f"[init_theme] Using fallback colors: {exc}", file=sys.stderr)
         colors = fallback_colors(theme_cfg)
 
+    colors = ensure_readability(colors, theme_cfg)
     write_theme_css(colors)
     print(f"[init_theme] Wrote {THEME_PATH}")
     return colors

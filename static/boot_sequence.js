@@ -4,6 +4,7 @@
 
 const BootSequence = (() => {
   const DELAYS = {
+    'status-bar': 0,
     'clock-module': 0,
     'sysinfo-module': 200,
     'weather-module': 400,
@@ -12,17 +13,13 @@ const BootSequence = (() => {
     'quote-module': 1000,
   };
 
-  function init(config) {
+  function init() {
     Object.entries(DELAYS).forEach(([id, delay]) => {
       const el = document.getElementById(id);
       if (!el) return;
 
       setTimeout(() => {
-        if (id === 'animation-module') {
-          el.classList.add('module--boot-visible');
-        } else {
-          el.classList.add('module--boot-visible');
-        }
+        el.classList.add('module--boot-visible');
         el.dataset.bootComplete = 'true';
         el.dispatchEvent(new CustomEvent('ricepi:boot-visible'));
       }, delay);

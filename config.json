@@ -5,6 +5,7 @@
     "fallback_accent": "#7dcfff",
     "fallback_base": "#1a1b26",
     "fallback_secondary": "#bb9af7",
+    "fallback_text": "#e8ecf4",
     "font_display": "Press Start 2P",
     "font_body": "JetBrains Mono",
     "scanlines": true,

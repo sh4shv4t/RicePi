@@ -1,7 +1,7 @@
 :root {
-  --color-base: #1c1e2a;
-  --color-accent: #743cb3;
-  --color-secondary: #3a5595;
-  --color-text: #93acf3;
-  --color-text-dim: color-mix(in srgb, #743cb3 50%, transparent);
+  --color-base: #100e20;
+  --color-accent: #7dcfff;
+  --color-secondary: #bb9af7;
+  --color-text: #e8ecf4;
+  --color-text-dim: color-mix(in srgb, #e8ecf4 72%, transparent);
 }
