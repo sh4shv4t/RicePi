@@ -76,7 +76,7 @@ body {
     "clock . sysinfo"
     ". . ."
     "calendar weather animation"
-    "quote quote animation";
+    "nowplaying quote animation";
   padding: 24px;
   gap: 16px;
   pointer-events: none;
@@ -254,7 +254,100 @@ body.pixel-borders .module {
   grid-area: quote;
   align-self: end;
   justify-self: stretch;
-  max-width: calc(66vw - 48px);
+  max-width: none;
+  min-height: 56px;
+}
+
+#nowplaying-module {
+  grid-area: nowplaying;
+  align-self: end;
+  justify-self: start;
+  min-width: 300px;
+  max-width: 360px;
+}
+
+.nowplaying-module--disabled {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.nowplaying {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nowplaying__art-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.nowplaying__art {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  display: block;
+}
+
+.nowplaying__art--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-base) 20%, transparent);
+  color: var(--color-accent);
+  font-size: 22px;
+}
+
+.nowplaying__art--fade {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.nowplaying__meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nowplaying__state {
+  font-size: 9px;
+  color: var(--color-accent);
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+}
+
+.nowplaying__state::before {
+  content: "> ";
+  color: var(--color-secondary);
+}
+
+.nowplaying__title {
+  font-size: 12px;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowplaying__artist {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowplaying--live .nowplaying__art-wrap {
+  animation: nowplaying-pulse 3s ease-in-out infinite;
+}
+
+.nowplaying__art--placeholder.hidden {
+  display: none;
 }
 
 .module__header {
@@ -755,7 +848,7 @@ body.scanlines::after {
       ". ."
       "weather weather"
       "calendar animation"
-      "quote quote";
+      "nowplaying quote";
   }
 
   #quote-module {

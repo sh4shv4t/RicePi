@@ -4,3 +4,4 @@ __pycache__/
 data/ping_cache.json
 data/network_cache.json
 data/spotify_cache.json
+data/spotify_art.jpg

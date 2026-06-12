@@ -19,7 +19,10 @@ const Sysinfo = (() => {
           lines.push({ label: 'os', value: data.os || 'unknown' });
           break;
         case 'kernel':
-          lines.push({ label: 'kernel', value: data.kernel || 'unknown' });
+          lines.push({
+            label: data.platform === 'windows' ? 'win' : 'kernel',
+            value: data.kernel || 'unknown',
+          });
           break;
         case 'uptime':
           lines.push({ label: 'uptime', value: data.uptime || 'unknown' });
@@ -51,10 +54,20 @@ const Sysinfo = (() => {
           }
           break;
         case 'cpu_temp':
-          lines.push({
-            label: 'cpu',
-            value: data.cpu_temp != null ? `${data.cpu_temp}°C` : 'n/a',
-          });
+          if (data.cpu_temp != null) {
+            lines.push({
+              label: 'cpu',
+              value: `${data.cpu_temp}°C`,
+            });
+          } else if (data.cpu_usage != null) {
+            lines.push({
+              label: 'cpu',
+              value: `${data.cpu_usage}%`,
+              bar: data.cpu_usage,
+            });
+          } else {
+            lines.push({ label: 'cpu', value: 'n/a' });
+          }
           break;
         default:
           break;

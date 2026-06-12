@@ -5,6 +5,7 @@ from __future__ import annotations
 import platform
 import shutil
 import socket
+import subprocess
 import time
 from pathlib import Path
 
@@ -39,8 +40,32 @@ def _read_os_pretty_name() -> str:
 
 def _read_kernel() -> str:
     if IS_WINDOWS:
-        return platform.version().split(".")[0] if platform.version() else platform.release()
+        return platform.release() or "unknown"
     return platform.release()
+
+
+def _read_cpu_usage() -> float | None:
+    if IS_WINDOWS:
+        try:
+            result = subprocess.run(
+                [
+                    "powershell",
+                    "-NoProfile",
+                    "-Command",
+                    "(Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            if result.returncode != 0:
+                return None
+            value = float(result.stdout.strip())
+            return round(value, 1)
+        except (OSError, subprocess.SubprocessError, ValueError):
+            return None
+    return None
 
 
 def _read_uptime() -> str:
@@ -173,6 +198,8 @@ def get_sysinfo(items: list[str] | None = None) -> dict:
         data["ram"] = _read_ram()
     if "cpu_temp" in requested:
         data["cpu_temp"] = _read_cpu_temp()
+        if data["cpu_temp"] is None:
+            data["cpu_usage"] = _read_cpu_usage()
     if "hostname" in requested:
         data["hostname"] = _read_hostname()
     if "local_ip" in requested:

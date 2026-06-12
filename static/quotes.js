@@ -57,6 +57,8 @@ const Quotes = (() => {
       if (quotes.length) {
         index = Math.floor(Math.random() * quotes.length);
         showQuote(quotes[index], false);
+      } else {
+        showQuote({ text: 'No quotes loaded.', author: 'ricepi' }, false);
       }
 
       const mins = config.quote?.rotate_every_mins || 10;

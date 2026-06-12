@@ -187,15 +187,10 @@ const Weather = (() => {
 
     if (forecastEl && data.today?.length) {
       const day = data.today[0];
-      const sunrise = day.sunrise || data.sunrise;
-      const sunset = day.sunset || data.sunset;
-      const sunHtml = sunrise && sunset
-        ? `<div class="weather__forecast-item weather__forecast-item--sun">☀ <span>${sunrise}</span> ☾ <span>${sunset}</span></div>`
-        : '';
       forecastEl.innerHTML = `
         <div class="weather__forecast-item">
           today <span>${day.min != null ? Math.round(day.min) : '--'}°</span> – <span>${day.max != null ? Math.round(day.max) : '--'}°</span>
-        </div>${sunHtml}`;
+        </div>`;
     }
 
     const sunEl = document.getElementById('weather-sun');

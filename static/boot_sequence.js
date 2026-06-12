@@ -11,6 +11,7 @@ const BootSequence = (() => {
     'calendar-module': 600,
     'animation-module': 800,
     'quote-module': 1000,
+    'nowplaying-module': 900,
   };
 
   function init() {

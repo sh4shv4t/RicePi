@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 import init_theme
+import spotify as spotify_module
 import status as status_module
 import sysinfo as sysinfo_module
 from scheduler import start_scheduler
@@ -126,6 +127,14 @@ async def get_spotify():
         with cache_path.open(encoding="utf-8") as f:
             return json.load(f)
     return {"playing": False, "artist": None, "title": None}
+
+
+@app.get("/api/spotify/art")
+async def get_spotify_art():
+    art_path = spotify_module.get_art_path()
+    if not art_path:
+        return JSONResponse({"error": "no art"}, status_code=404)
+    return FileResponse(art_path, media_type="image/jpeg")
 
 
 if __name__ == "__main__":

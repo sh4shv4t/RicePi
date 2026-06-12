@@ -87,6 +87,22 @@
       </div>
     </section>
 
+    <!-- BOTTOM LEFT: Now playing -->
+    <section id="nowplaying-module" class="module module--boot" data-boot-order="6">
+      <div class="module__header">now playing</div>
+      <div class="nowplaying">
+        <div class="nowplaying__art-wrap">
+          <img id="nowplaying-art" class="nowplaying__art hidden" alt="" width="72" height="72">
+          <div id="nowplaying-art-placeholder" class="nowplaying__art nowplaying__art--placeholder" aria-hidden="true">♪</div>
+        </div>
+        <div class="nowplaying__meta">
+          <div id="nowplaying-state" class="nowplaying__state">idle</div>
+          <div id="nowplaying-title" class="nowplaying__title">nothing playing</div>
+          <div id="nowplaying-artist" class="nowplaying__artist">start spotify to begin</div>
+        </div>
+      </div>
+    </section>
+
     <!-- BOTTOM: Quote -->
     <section id="quote-module" class="module module--boot" data-boot-order="5">
       <blockquote id="quote-block" class="quote">
@@ -103,6 +119,7 @@
   <script src="/static/calendar.js"></script>
   <script src="/static/sysinfo.js"></script>
   <script src="/static/status_bar.js"></script>
+  <script src="/static/now_playing.js"></script>
   <script src="/static/quotes.js"></script>
   <script src="/static/animation_player.js"></script>
   <script>
@@ -125,6 +142,7 @@
       Calendar.init(config);
       Sysinfo.init(config);
       StatusBar.init(config);
+      NowPlaying.init(config);
       Quotes.init(config);
       AnimationPlayer.init(config);
     });
