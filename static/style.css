@@ -68,18 +68,21 @@ body {
   z-index: 10;
   width: 100vw;
   height: 100vh;
+  max-height: 100vh;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr 1fr;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-columns: minmax(280px, 1.1fr) minmax(260px, 0.9fr) 180px;
+  grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 36vh) minmax(0, 112px);
   grid-template-areas:
     "status status status"
     "clock . sysinfo"
     ". . ."
     "calendar weather animation"
     "nowplaying quote animation";
-  padding: 24px;
-  gap: 16px;
+  padding: 16px;
+  gap: 12px;
   pointer-events: none;
+  overflow: hidden;
 }
 
 /* Status bar */
@@ -184,8 +187,10 @@ body {
   background: var(--module-bg-max);
   border: 1px solid var(--color-accent);
   border-radius: 0;
-  padding: 14px 16px;
+  padding: 12px 14px;
   position: relative;
+  min-height: 0;
+  max-height: 100%;
   text-shadow: 0 1px 6px color-mix(in srgb, var(--color-base) 85%, transparent);
   backdrop-filter: blur(6px);
 }
@@ -221,8 +226,9 @@ body.pixel-borders .module {
   grid-area: weather;
   align-self: end;
   justify-self: center;
-  min-width: 320px;
-  max-width: 360px;
+  min-width: 0;
+  width: 100%;
+  max-width: 340px;
 }
 
 .weather {
@@ -235,18 +241,22 @@ body.pixel-borders .module {
   grid-area: calendar;
   align-self: end;
   justify-self: start;
-  min-width: 360px;
-  max-width: 420px;
-  padding: 16px 18px;
+  width: 100%;
+  max-width: 380px;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 12px 14px;
 }
 
 #animation-module {
   grid-area: animation;
   align-self: end;
   justify-self: end;
-  width: 220px;
-  height: 220px;
-  padding: 8px;
+  width: 180px;
+  height: 100%;
+  max-height: calc(36vh + 112px + 12px);
+  min-height: 0;
+  padding: 6px;
   background: var(--module-bg);
 }
 
@@ -254,16 +264,21 @@ body.pixel-borders .module {
   grid-area: quote;
   align-self: end;
   justify-self: stretch;
+  min-width: 0;
   max-width: none;
-  min-height: 56px;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 #nowplaying-module {
   grid-area: nowplaying;
   align-self: end;
   justify-self: start;
-  min-width: 300px;
-  max-width: 360px;
+  width: 100%;
+  max-width: 340px;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 10px 12px;
 }
 
 .nowplaying-module--disabled {
@@ -274,19 +289,19 @@ body.pixel-borders .module {
 .nowplaying {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .nowplaying__art-wrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
 }
 
 .nowplaying__art {
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
   border: 1px solid var(--color-accent);
   border-radius: 0;
@@ -356,7 +371,7 @@ body.pixel-borders .module {
   color: var(--color-accent);
   letter-spacing: 0.06em;
   text-transform: lowercase;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .module__header::before {
@@ -633,8 +648,8 @@ body.scanlines::after {
   color: var(--color-text);
   letter-spacing: 0.06em;
   text-transform: lowercase;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
 }
 
@@ -646,22 +661,22 @@ body.scanlines::after {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  font-size: 13px;
+  gap: 2px;
+  font-size: 11px;
   text-align: center;
 }
 
 .calendar-grid__day-name {
   color: var(--color-accent);
-  font-size: 10px;
-  padding-bottom: 6px;
+  font-size: 9px;
+  padding-bottom: 4px;
   font-weight: 500;
 }
 
 .calendar-grid__cell {
-  padding: 8px 4px;
-  min-width: 28px;
-  min-height: 28px;
+  padding: 5px 2px;
+  min-width: 0;
+  min-height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -691,16 +706,16 @@ body.scanlines::after {
 
 .calendar-events {
   list-style: none;
-  margin-top: 14px;
-  padding-top: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .calendar-events__item {
   opacity: 0;
   transform: translateX(-20px);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: var(--color-text);
   display: flex;
   align-items: baseline;
@@ -842,6 +857,7 @@ body.scanlines::after {
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 34vh) minmax(0, 112px);
     grid-template-areas:
       "status status"
       "clock sysinfo"
