@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 import init_theme
+import status as status_module
 import sysinfo as sysinfo_module
 from scheduler import start_scheduler
 
@@ -106,6 +107,20 @@ async def get_events():
     events_path = DATA_DIR / "events.json"
     with events_path.open(encoding="utf-8") as f:
         return json.load(f)
+
+
+@app.get("/api/status")
+async def get_status():
+    return status_module.get_status()
+
+
+@app.get("/api/spotify")
+async def get_spotify():
+    cache_path = DATA_DIR / "spotify_cache.json"
+    if cache_path.is_file():
+        with cache_path.open(encoding="utf-8") as f:
+            return json.load(f)
+    return {"playing": False, "artist": None, "title": None}
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 /**
- * Sysinfo widget — typewriter lines and bar animations.
+ * Sysinfo widget — typewriter lines, bar animations, status bar.
  */
 
 const Sysinfo = (() => {
@@ -12,6 +12,9 @@ const Sysinfo = (() => {
 
     items.forEach((key) => {
       switch (key) {
+        case 'hostname':
+          lines.push({ label: 'host', value: data.hostname || 'unknown' });
+          break;
         case 'os':
           lines.push({ label: 'os', value: data.os || 'unknown' });
           break;
@@ -30,6 +33,23 @@ const Sysinfo = (() => {
           });
           break;
         }
+        case 'local_ip':
+          lines.push({ label: 'ip', value: data.local_ip || 'offline' });
+          break;
+        case 'disk': {
+          const disk = data.disk || {};
+          lines.push({
+            label: 'disk',
+            value: `${disk.used_gb || 0}/${disk.total_gb || 0} GB`,
+            bar: disk.percent || 0,
+          });
+          break;
+        }
+        case 'load_avg':
+          if (data.load_avg) {
+            lines.push({ label: 'load', value: data.load_avg });
+          }
+          break;
         case 'cpu_temp':
           lines.push({
             label: 'cpu',
@@ -44,6 +64,22 @@ const Sysinfo = (() => {
     return lines;
   }
 
+  function updateStatusBar(data) {
+    const prompt = document.getElementById('status-prompt');
+    const ipEl = document.getElementById('status-ip');
+    const uptimeEl = document.getElementById('status-uptime');
+
+    if (prompt && data.hostname) {
+      prompt.textContent = `${data.hostname}@ricepi ~ %`;
+    }
+    if (ipEl && data.local_ip) {
+      ipEl.textContent = data.local_ip;
+    }
+    if (uptimeEl && data.uptime) {
+      uptimeEl.textContent = `uptime ${data.uptime}`;
+    }
+  }
+
   function renderLines(lines, animate) {
     const container = document.getElementById('sysinfo-content');
     if (!container) return;
@@ -52,7 +88,7 @@ const Sysinfo = (() => {
       const barHtml = line.bar != null
         ? `<span class="sysinfo__bar-wrap"><span class="sysinfo__bar" data-width="${line.bar}"></span></span>`
         : '';
-      return `<div class="sysinfo__line" data-index="${i}"><span class="sysinfo__label">${line.label}</span> <span class="sysinfo__value">${line.value}</span>${barHtml}</div>`;
+      return `<div class="sysinfo__line" data-index="${i}"><span class="sysinfo__label">${line.label}</span><span class="sysinfo__value">${line.value}</span>${barHtml}</div>`;
     }).join('');
 
     if (animate) {
@@ -107,7 +143,9 @@ const Sysinfo = (() => {
 
     try {
       const data = await fetchJson('/api/sysinfo');
+      updateStatusBar(data);
       const lines = buildLines(data);
+
       if (!previousData) {
         renderLines(lines, animate);
       } else {

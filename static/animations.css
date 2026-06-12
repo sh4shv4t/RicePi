@@ -1,5 +1,3 @@
-/* RicePi — micro-animations and keyframes */
-
 /* Boot cascade */
 @keyframes boot-in {
   from {
@@ -18,6 +16,11 @@
 
 .module--boot-visible {
   animation: boot-in 600ms ease-out forwards;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--color-accent); }
+  50% { opacity: 0.5; box-shadow: 0 0 1px var(--color-accent); }
 }
 
 /* Clock */

@@ -14,6 +14,24 @@
 <body>
   <div id="wallpaper" aria-hidden="true"></div>
 
+  <header id="status-bar" class="status-bar module--boot" aria-hidden="true">
+    <span class="status-bar__dot"></span>
+    <span id="status-prompt" class="status-bar__prompt">ricepi@node ~ %</span>
+    <span class="status-bar__sep">|</span>
+    <span id="status-ip" class="status-bar__meta">---</span>
+    <span class="status-bar__sep">|</span>
+    <span id="status-uptime" class="status-bar__meta">uptime ---</span>
+    <span class="status-bar__sep">|</span>
+    <span id="status-ping" class="status-bar__meta">ping ---</span>
+    <span class="status-bar__sep">|</span>
+    <span id="status-net" class="status-bar__meta">net ---</span>
+    <span id="status-net-spark" class="status-bar__spark" aria-hidden="true"></span>
+    <span class="status-bar__sep">|</span>
+    <span id="status-spotify" class="status-bar__meta status-bar__spotify hidden">♪ idle</span>
+    <span class="status-bar__sep status-bar__sep--spotify hidden">|</span>
+    <span class="status-bar__meta status-bar__link">link:up</span>
+  </header>
+
   <main id="dashboard" class="dashboard">
     <!-- TOP LEFT: Clock + Date -->
     <section id="clock-module" class="module module--boot" data-boot-order="0">
@@ -42,6 +60,7 @@
             <div id="weather-temp" class="weather__temp">--°</div>
             <div id="weather-city" class="weather__city"></div>
             <div id="weather-wind" class="weather__wind"></div>
+            <div id="weather-sun" class="weather__sun"></div>
           </div>
         </div>
         <div id="weather-forecast" class="weather__forecast"></div>
@@ -51,6 +70,7 @@
     <!-- BOTTOM LEFT: Calendar -->
     <section id="calendar-module" class="module module--boot" data-boot-order="3">
       <div class="module__header">calendar</div>
+      <div id="calendar-month" class="calendar-month"></div>
       <div id="calendar-grid" class="calendar-grid"></div>
       <ul id="calendar-events" class="calendar-events"></ul>
     </section>
@@ -81,6 +101,7 @@
   <script src="/static/weather.js"></script>
   <script src="/static/calendar.js"></script>
   <script src="/static/sysinfo.js"></script>
+  <script src="/static/status_bar.js"></script>
   <script src="/static/quotes.js"></script>
   <script src="/static/animation_player.js"></script>
   <script>
@@ -102,8 +123,13 @@
       Weather.init(config);
       Calendar.init(config);
       Sysinfo.init(config);
+      StatusBar.init(config);
       Quotes.init(config);
       AnimationPlayer.init(config);
+
+      setTimeout(() => {
+        document.getElementById('status-bar')?.classList.add('module--boot-visible');
+      }, 100);
     });
   </script>
 </body>

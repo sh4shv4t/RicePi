@@ -1,12 +1,14 @@
 {
-  "updated_at": "2026-06-12T18:25:23.148600+00:00",
+  "updated_at": "2026-06-12T18:55:18.541155+00:00",
   "city": "Jaipur",
   "units": "metric",
+  "sunrise": "05:32",
+  "sunset": "19:20",
   "current": {
-    "temperature": 24.3,
+    "temperature": 24.4,
     "weathercode": 0,
     "condition": "night_clear",
-    "windspeed": 9.0,
+    "windspeed": 6.7,
     "is_day": false
   },
   "today": [
@@ -14,7 +16,9 @@
       "code": 81,
       "condition": "rain",
       "max": 36.8,
-      "min": 23.3
+      "min": 23.3,
+      "sunrise": "05:32",
+      "sunset": "19:20"
     }
   ]
 }

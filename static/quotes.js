@@ -16,7 +16,7 @@ const Quotes = (() => {
       : '';
 
     const apply = () => {
-      textEl.innerHTML = `"${quote.text}"${cursor}`;
+      textEl.innerHTML = `${quote.text}${cursor}`;
       authorEl.textContent = quote.author ? `— ${quote.author}` : '';
       authorEl.classList.remove('visible');
       setTimeout(() => authorEl.classList.add('visible'), 200);

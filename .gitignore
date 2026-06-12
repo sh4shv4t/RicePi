@@ -1,0 +1,6 @@
+/venv
+__pycache__/
+*.pyc
+data/ping_cache.json
+data/network_cache.json
+data/spotify_cache.json

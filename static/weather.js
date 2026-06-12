@@ -187,10 +187,26 @@ const Weather = (() => {
 
     if (forecastEl && data.today?.length) {
       const day = data.today[0];
+      const sunrise = day.sunrise || data.sunrise;
+      const sunset = day.sunset || data.sunset;
+      const sunHtml = sunrise && sunset
+        ? `<div class="weather__forecast-item weather__forecast-item--sun">☀ <span>${sunrise}</span> ☾ <span>${sunset}</span></div>`
+        : '';
       forecastEl.innerHTML = `
         <div class="weather__forecast-item">
           today <span>${day.min != null ? Math.round(day.min) : '--'}°</span> – <span>${day.max != null ? Math.round(day.max) : '--'}°</span>
-        </div>`;
+        </div>${sunHtml}`;
+    }
+
+    const sunEl = document.getElementById('weather-sun');
+    if (sunEl) {
+      const sunrise = data.sunrise || data.today?.[0]?.sunrise;
+      const sunset = data.sunset || data.today?.[0]?.sunset;
+      if (sunrise && sunset) {
+        sunEl.textContent = `↑ ${sunrise}  ↓ ${sunset}`;
+      } else {
+        sunEl.textContent = '';
+      }
     }
   }
 

@@ -100,6 +100,42 @@ Set in `config.json`:
 - Quotes: edit `data/quotes.json`
 - Calendar events: edit `data/events.json` (when `calendar.source` is `"local"`)
 
+### Status bar (ping, network, Spotify)
+
+The top status bar shows live ping latency, network throughput with a mini spark graph, and optional Spotify now-playing.
+
+```json
+"status": {
+  "ping_host": "8.8.8.8",
+  "ping_interval_secs": 30,
+  "network_interval_secs": 2,
+  "poll_interval_secs": 5
+}
+```
+
+**Spotify** — set `"enabled": true` and pick a source:
+
+| Source | Platform | Setup |
+|--------|----------|-------|
+| `playerctl` | Linux/Pi | `sudo apt install playerctl`, Spotify desktop playing |
+| `web_api` | Any | [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) app + refresh token in `web_api` |
+| `local` | Any | Your own JSON endpoint at `local_url` returning `{"playing": true, "artist": "...", "title": "..."}` |
+
+```json
+"spotify": {
+  "enabled": true,
+  "source": "playerctl",
+  "poll_secs": 10,
+  "web_api": {
+    "client_id": "your_id",
+    "client_secret": "your_secret",
+    "refresh_token": "your_refresh_token"
+  }
+}
+```
+
+Weather now includes **sunrise/sunset** times from Open-Meteo in the weather widget.
+
 ## API Endpoints
 
 | Method | Path | Description |
@@ -111,6 +147,8 @@ Set in `config.json`:
 | GET | `/api/sysinfo` | Live system stats |
 | GET | `/api/quotes` | Quote bank |
 | GET | `/api/events` | Calendar events |
+| GET | `/api/status` | Ping, network spark, Spotify cache |
+| GET | `/api/spotify` | Spotify now-playing cache |
 
 ## Raspberry Pi Boot Setup
 

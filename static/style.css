@@ -43,6 +43,18 @@ body {
   background-repeat: no-repeat;
 }
 
+#wallpaper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 5%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.35;
+}
+
 #wallpaper::after {
   content: "";
   position: absolute;
@@ -57,9 +69,10 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-columns: 1.1fr 0.9fr 1fr;
+  grid-template-rows: auto auto 1fr auto auto;
   grid-template-areas:
+    "status status status"
     "clock . sysinfo"
     ". . ."
     "calendar weather animation"
@@ -67,6 +80,101 @@ body {
   padding: 24px;
   gap: 16px;
   pointer-events: none;
+}
+
+/* Status bar */
+.status-bar {
+  grid-area: status;
+  pointer-events: auto;
+  align-self: start;
+  justify-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--color-base) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.02em;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.status-bar__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  flex-shrink: 0;
+  animation: status-pulse 2.5s ease-in-out infinite;
+}
+
+.status-bar__prompt {
+  color: var(--color-accent);
+}
+
+.status-bar__sep {
+  color: color-mix(in srgb, var(--color-text-dim) 50%, transparent);
+}
+
+.status-bar__meta {
+  color: var(--color-text-dim);
+}
+
+.status-bar__link {
+  color: var(--color-secondary);
+}
+
+.status-bar__meta--warn {
+  color: var(--color-secondary);
+}
+
+.status-bar__spotify {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-dim);
+}
+
+.status-bar__spotify--live {
+  color: var(--color-accent);
+}
+
+.status-bar__spark {
+  display: inline-flex;
+  align-items: flex-end;
+  height: 14px;
+}
+
+.net-spark {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  height: 14px;
+}
+
+.net-spark__row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 6px;
+}
+
+.net-spark__bar {
+  width: 3px;
+  min-height: 1px;
+  border-radius: 0;
+  opacity: 0.85;
+}
+
+.net-spark__bar--tx {
+  background: var(--color-accent);
+}
+
+.net-spark__bar--rx {
+  background: var(--color-secondary);
 }
 
 .module {
@@ -116,7 +224,9 @@ body.pixel-borders .module {
   grid-area: calendar;
   align-self: end;
   justify-self: start;
-  min-width: 280px;
+  min-width: 360px;
+  max-width: 420px;
+  padding: 16px 18px;
 }
 
 #animation-module {
@@ -137,12 +247,22 @@ body.pixel-borders .module {
 }
 
 .module__header {
-  font-family: var(--font-display);
-  font-size: 8px;
+  font-family: var(--font-body);
+  font-size: 10px;
   color: var(--color-accent);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: lowercase;
   margin-bottom: 10px;
+}
+
+.module__header::before {
+  content: "[ ";
+  color: var(--color-secondary);
+}
+
+.module__header::after {
+  content: " ]";
+  color: var(--color-secondary);
 }
 
 /* Scanline overlay */
@@ -209,6 +329,11 @@ body.scanlines::after {
   letter-spacing: 0.04em;
 }
 
+.date::before {
+  content: "// ";
+  color: color-mix(in srgb, var(--color-secondary) 70%, transparent);
+}
+
 /* Sysinfo */
 .sysinfo {
   font-family: var(--font-body);
@@ -218,8 +343,9 @@ body.scanlines::after {
 .sysinfo__line {
   opacity: 0;
   transform: translateX(-5px);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   white-space: nowrap;
+  font-size: 11px;
 }
 
 .sysinfo__line.visible {
@@ -229,6 +355,12 @@ body.scanlines::after {
 
 .sysinfo__label {
   color: var(--color-accent);
+}
+
+.sysinfo__label::before {
+  content: ">";
+  margin-right: 6px;
+  color: var(--color-secondary);
 }
 
 .sysinfo__value {
@@ -305,6 +437,18 @@ body.scanlines::after {
   margin-top: 2px;
 }
 
+.weather__sun {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+.weather__sun span,
+.weather__forecast-item--sun span {
+  color: var(--color-accent);
+}
+
 .weather__forecast {
   display: flex;
   gap: 12px;
@@ -375,22 +519,44 @@ body.scanlines::after {
 }
 
 /* Calendar */
+.calendar-month {
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--color-text);
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.calendar-month::before {
+  content: "~ ";
+  color: var(--color-secondary);
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  font-size: 10px;
+  gap: 4px;
+  font-size: 13px;
   text-align: center;
 }
 
 .calendar-grid__day-name {
   color: var(--color-accent);
-  font-size: 9px;
-  padding-bottom: 4px;
+  font-size: 10px;
+  padding-bottom: 6px;
+  font-weight: 500;
 }
 
 .calendar-grid__cell {
-  padding: 4px 2px;
+  padding: 8px 4px;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-dim);
   border: 1px solid transparent;
   border-radius: 0;
@@ -416,15 +582,23 @@ body.scanlines::after {
 
 .calendar-events {
   list-style: none;
-  margin-top: 12px;
-  font-size: 11px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
+  font-size: 12px;
 }
 
 .calendar-events__item {
   opacity: 0;
   transform: translateX(-20px);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--color-text-dim);
+}
+
+.calendar-events__item::before {
+  content: ">";
+  margin-right: 8px;
+  color: var(--color-secondary);
 }
 
 .calendar-events__item.visible {
@@ -447,6 +621,11 @@ body.scanlines::after {
   font-size: 13px;
   color: var(--color-text);
   line-height: 1.6;
+}
+
+.quote__text::before {
+  content: "$ ";
+  color: var(--color-accent);
 }
 
 .quote__cursor {
@@ -548,6 +727,7 @@ body.scanlines::after {
   .dashboard {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
+      "status status"
       "clock sysinfo"
       ". ."
       "weather weather"

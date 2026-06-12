@@ -27,6 +27,7 @@ const Calendar = (() => {
 
   function buildGrid(referenceDate) {
     const grid = document.getElementById('calendar-grid');
+    const monthEl = document.getElementById('calendar-month');
     if (!grid) return;
 
     const year = referenceDate.getFullYear();
@@ -38,6 +39,13 @@ const Calendar = (() => {
 
     grid.innerHTML = '';
     todayCell = null;
+
+    if (monthEl) {
+      monthEl.textContent = referenceDate.toLocaleDateString(undefined, {
+        month: 'long',
+        year: 'numeric',
+      }).toLowerCase();
+    }
 
     DAY_NAMES.forEach((name) => {
       const label = document.createElement('div');
